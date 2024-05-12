@@ -1,0 +1,29 @@
+service: wait-time-probe
+
+frameworkVersion: "3"
+
+plugins:
+  - serverless-bundle
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  region: us-east-1
+  environment:
+    JSON_S3_BUCKET: ${self:service}-bucket-${opt:stage, self:provider.stage, "dev"}
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - "s3:GetObject"
+            - "s3:PutObject"
+          Resource:
+            - "arn:aws:s3:::${self:provider.environment.JSON_S3_BUCKET}/*"
+            - "arn:aws:s3:::${self:provider.environment.JSON_S3_BUCKET}"
+
+functions:
+  readAndWriteWaitTimeData:
+    handler: src/readAndWriteWaitTimeData.readAndWriteWaitTimeData
+    events:
+      - schedule: rate(10 minutes)

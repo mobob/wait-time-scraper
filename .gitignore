@@ -1,0 +1,6 @@
+node_modules
+.cache
+.serverless
+remotes3*
+converted*
+*.csv
